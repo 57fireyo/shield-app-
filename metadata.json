@@ -1,0 +1,6 @@
+{
+  "name": "SlopeWatch",
+  "description": "Real-time Landslide Early Warning and Geological Slope Telemetry System for North-East India.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

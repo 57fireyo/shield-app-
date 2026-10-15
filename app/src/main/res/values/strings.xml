@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">SlopeWatch</string>
+    <string name="monitoring_dashboard">Slope Telemetry</string>
+    <string name="landslide_risk_alert">Landslide Warning System</string>
+    <string name="stations_title">Monitoring Stations</string>
+    <string name="analytics_title">Telemetry Trends</string>
+    <string name="settings_title">Thresholds &amp; Alerts</string>
+</resources>
