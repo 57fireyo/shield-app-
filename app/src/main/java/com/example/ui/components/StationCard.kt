@@ -40,12 +40,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.RiskLevel
 import com.example.data.model.StationWithLatestTelemetry
+import com.example.ui.theme.AlertAmber
+import com.example.ui.theme.AlertAmberContainer
+import com.example.ui.theme.BorderSubtle
+import com.example.ui.theme.GreeneryContainer
+import com.example.ui.theme.GreeneryContainerText
+import com.example.ui.theme.GreeneryPrimary
 import com.example.ui.theme.MetricPorePressure
 import com.example.ui.theme.MetricRainfall
 import com.example.ui.theme.MetricTilt
-import com.example.ui.theme.RiskCriticalRed
-import com.example.ui.theme.RiskLowGreen
-import com.example.ui.theme.RiskWarningAmber
+import com.example.ui.theme.ObsidianBlack
+import com.example.ui.theme.PureBlack
+import com.example.ui.theme.PureWhite
+import com.example.ui.theme.RedAlertBright
+import com.example.ui.theme.RedAlertContainer
+import com.example.ui.theme.RedAlertDark
+import com.example.ui.theme.RedAlertPrimary
 
 @Composable
 fun StationCard(
@@ -59,10 +69,16 @@ fun StationCard(
     val risk = stationWithTelemetry.evaluatedRiskLevel
     val fos = stationWithTelemetry.estimatedFactorOfSafety
 
-    val fosColor = when {
-        fos < 1.0 -> RiskCriticalRed
-        fos <= 1.3 -> RiskWarningAmber
-        else -> RiskLowGreen
+    val (fosBg, fosText) = when {
+        fos < 1.0 -> Pair(RedAlertContainer, RedAlertPrimary)
+        fos <= 1.3 -> Pair(AlertAmberContainer, AlertAmber)
+        else -> Pair(GreeneryContainer, GreeneryContainerText)
+    }
+
+    val cardBorderColor = when (risk) {
+        RiskLevel.CRITICAL -> RedAlertBright
+        RiskLevel.HIGH -> RedAlertPrimary.copy(alpha = 0.5f)
+        else -> BorderSubtle
     }
 
     Card(
@@ -72,11 +88,11 @@ fun StationCard(
             .clickable(onClick = onCardClick),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = PureWhite
         ),
         border = BorderStroke(
-            width = 1.dp,
-            color = if (risk == RiskLevel.CRITICAL) RiskCriticalRed.copy(alpha = 0.5f) else MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
+            width = if (risk == RiskLevel.CRITICAL) 1.5.dp else 1.dp,
+            color = cardBorderColor
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -95,17 +111,18 @@ fun StationCard(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.weight(1f)
                 ) {
+                    // Black & Greenery station code badge
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
-                            .background(MaterialTheme.colorScheme.primaryContainer)
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                            .background(ObsidianBlack)
+                            .padding(horizontal = 7.dp, vertical = 3.dp)
                     ) {
                         Text(
                             text = station.code,
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            color = PureWhite
                         )
                     }
                     Spacer(modifier = Modifier.width(8.dp))
@@ -117,46 +134,46 @@ fun StationCard(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
-                            .background(fosColor.copy(alpha = 0.15f))
-                            .padding(horizontal = 6.dp, vertical = 3.dp)
+                            .background(fosBg)
+                            .padding(horizontal = 7.dp, vertical = 3.dp)
                     ) {
                         Text(
                             text = "FoS: $fos",
                             fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = fosColor
+                            fontWeight = FontWeight.ExtraBold,
+                            color = fosText
                         )
                     }
 
                     IconButton(
                         onClick = onBookmarkToggle,
                         modifier = Modifier
-                            .size(40.dp)
+                            .size(38.dp)
                             .testTag("bookmark_btn_${station.id}")
                     ) {
                         Icon(
                             imageVector = if (station.isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
                             contentDescription = if (station.isBookmarked) "Unbookmark" else "Bookmark",
-                            tint = if (station.isBookmarked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                            tint = if (station.isBookmarked) GreeneryPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
-            // Station Name
+            // Station Name in crisp bold Obsidian Black
             Text(
                 text = station.name,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = ObsidianBlack,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
 
             // State & District & Slope
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(3.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -174,8 +191,8 @@ fun StationCard(
                 Text(
                     text = "Slope: ${station.slopeAngleDeg}° (${station.elevationM.toInt()}m)",
                     fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    fontWeight = FontWeight.SemiBold,
+                    color = GreeneryPrimary
                 )
             }
 
@@ -186,23 +203,25 @@ fun StationCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                val tilt = reading?.inclinometerTiltDeg ?: 0.0
                 TelemetryMetricChip(
-                    label = "Tilt Angle",
-                    value = String.format("%.2f", reading?.inclinometerTiltDeg ?: 0.0),
+                    label = "Inclinometer Tilt",
+                    value = String.format("%.2f", tilt),
                     unit = "°",
                     icon = Icons.Default.Speed,
-                    accentColor = MetricTilt,
+                    accentColor = if (tilt >= 4.0) RedAlertPrimary else MetricTilt,
                     modifier = Modifier.weight(1f),
-                    isWarning = (reading?.inclinometerTiltDeg ?: 0.0) >= 4.0
+                    isWarning = tilt >= 4.0
                 )
+                val pore = reading?.porePressureKpa ?: 0.0
                 TelemetryMetricChip(
-                    label = "Pore Press.",
-                    value = String.format("%.1f", reading?.porePressureKpa ?: 0.0),
+                    label = "Pore Pressure",
+                    value = String.format("%.1f", pore),
                     unit = "kPa",
                     icon = Icons.Default.WaterDrop,
-                    accentColor = MetricPorePressure,
+                    accentColor = if (pore >= 70.0) RedAlertPrimary else MetricPorePressure,
                     modifier = Modifier.weight(1f),
-                    isWarning = (reading?.porePressureKpa ?: 0.0) >= 70.0
+                    isWarning = pore >= 70.0
                 )
             }
 
@@ -212,34 +231,40 @@ fun StationCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                val rain = reading?.rainfallAcc24hMm ?: 0.0
                 TelemetryMetricChip(
-                    label = "24h Rain",
-                    value = String.format("%.1f", reading?.rainfallAcc24hMm ?: 0.0),
+                    label = "24h Rainfall",
+                    value = String.format("%.1f", rain),
                     unit = "mm",
                     icon = Icons.Default.WaterDrop,
-                    accentColor = MetricRainfall,
+                    accentColor = if (rain >= 120.0) RedAlertPrimary else MetricRainfall,
                     modifier = Modifier.weight(1f),
-                    isWarning = (reading?.rainfallAcc24hMm ?: 0.0) >= 120.0
+                    isWarning = rain >= 120.0
                 )
                 TelemetryMetricChip(
                     label = "Lithology",
-                    value = station.lithology.take(10) + "…",
+                    value = station.lithology.take(12) + "…",
                     unit = "",
                     icon = Icons.Default.Terrain,
-                    accentColor = MaterialTheme.colorScheme.secondary,
+                    accentColor = ObsidianBlack,
                     modifier = Modifier.weight(1f)
                 )
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            // Critical Infrastructure warning tag
+            // Critical Infrastructure alert banner
+            val isCritical = risk == RiskLevel.CRITICAL
+            val infraBg = if (isCritical) RedAlertContainer else GreeneryContainer.copy(alpha = 0.5f)
+            val infraTextColor = if (isCritical) RedAlertDark else GreeneryContainerText
+            val infraIconColor = if (isCritical) RedAlertPrimary else GreeneryPrimary
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                    .background(infraBg)
+                    .padding(horizontal = 10.dp, vertical = 7.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -250,14 +275,15 @@ fun StationCard(
                     Icon(
                         imageVector = Icons.Default.Warning,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier.size(14.dp)
+                        tint = infraIconColor,
+                        modifier = Modifier.size(15.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = "Infra: ${station.criticalInfrastructure}",
                         fontSize = 11.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontWeight = FontWeight.Medium,
+                        color = infraTextColor,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -265,7 +291,7 @@ fun StationCard(
                 Icon(
                     imageVector = Icons.Default.ChevronRight,
                     contentDescription = "View telemetry",
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = if (isCritical) RedAlertPrimary else GreeneryPrimary,
                     modifier = Modifier.size(16.dp)
                 )
             }

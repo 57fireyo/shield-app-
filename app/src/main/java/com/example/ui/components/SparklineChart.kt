@@ -59,8 +59,8 @@ fun SparklineChart(
             Text(
                 text = title,
                 fontSize = 12.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                fontWeight = FontWeight.Bold,
+                color = com.example.ui.theme.ObsidianBlack
             )
             Text(
                 text = "$currentValue $unit",

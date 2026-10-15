@@ -1,10 +1,17 @@
 package com.example.data.model
 
 import androidx.compose.ui.graphics.Color
-import com.example.ui.theme.RiskCriticalRed
-import com.example.ui.theme.RiskLowGreen
-import com.example.ui.theme.RiskModerateYellow
-import com.example.ui.theme.RiskWarningAmber
+import com.example.ui.theme.AlertAmber
+import com.example.ui.theme.AlertAmberContainer
+import com.example.ui.theme.AlertAmberText
+import com.example.ui.theme.GreeneryContainer
+import com.example.ui.theme.GreeneryContainerText
+import com.example.ui.theme.GreeneryPrimary
+import com.example.ui.theme.GreeneryVibrant
+import com.example.ui.theme.RedAlertContainer
+import com.example.ui.theme.RedAlertContainerText
+import com.example.ui.theme.RedAlertDark
+import com.example.ui.theme.RedAlertPrimary
 
 enum class RiskLevel(val label: String, val severityRank: Int) {
     CRITICAL("CRITICAL", 4),
@@ -13,10 +20,24 @@ enum class RiskLevel(val label: String, val severityRank: Int) {
     LOW("LOW", 1);
 
     fun getColor(): Color = when (this) {
-        CRITICAL -> RiskCriticalRed
-        HIGH -> RiskWarningAmber
-        MODERATE -> RiskModerateYellow
-        LOW -> RiskLowGreen
+        CRITICAL -> RedAlertPrimary
+        HIGH -> RedAlertDark
+        MODERATE -> AlertAmber
+        LOW -> GreeneryPrimary
+    }
+
+    fun getContainerColor(): Color = when (this) {
+        CRITICAL -> RedAlertContainer
+        HIGH -> RedAlertContainer
+        MODERATE -> AlertAmberContainer
+        LOW -> GreeneryContainer
+    }
+
+    fun getTextColor(): Color = when (this) {
+        CRITICAL -> RedAlertContainerText
+        HIGH -> RedAlertContainerText
+        MODERATE -> AlertAmberText
+        LOW -> GreeneryContainerText
     }
 
     companion object {

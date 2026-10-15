@@ -8,50 +8,65 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorScheme = darkColorScheme(
-    primary = TealLight,
-    onPrimary = Slate900,
-    primaryContainer = TealDark,
-    onPrimaryContainer = Color.White,
-    secondary = CyanAccent,
-    onSecondary = Slate900,
-    secondaryContainer = Slate700,
-    onSecondaryContainer = Color.White,
-    tertiary = RiskWarningAmber,
-    background = Slate900,
-    surface = Slate800,
-    onBackground = Slate100,
-    onSurface = Slate100,
-    surfaceVariant = Slate700,
-    onSurfaceVariant = Slate300,
-    outline = Slate600
+// Clean, luminous White + Greenery + Red + Black Light Scheme
+private val CleanWhiteGreeneryScheme = lightColorScheme(
+    primary = GreeneryPrimary,
+    onPrimary = PureWhite,
+    primaryContainer = GreeneryContainer,
+    onPrimaryContainer = GreeneryContainerText,
+    secondary = ObsidianBlack,
+    onSecondary = PureWhite,
+    secondaryContainer = SurfaceSubtle,
+    onSecondaryContainer = ObsidianBlack,
+    tertiary = RedAlertPrimary,
+    onTertiary = PureWhite,
+    tertiaryContainer = RedAlertContainer,
+    onTertiaryContainer = RedAlertContainerText,
+    background = PureWhite,
+    onBackground = ObsidianBlack,
+    surface = PureWhite,
+    onSurface = ObsidianBlack,
+    surfaceVariant = SurfaceSubtle,
+    onSurfaceVariant = CharcoalMuted,
+    outline = BorderSubtle,
+    error = RedAlertPrimary,
+    onError = PureWhite,
+    errorContainer = RedAlertContainer,
+    onErrorContainer = RedAlertContainerText
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = TealPrimary,
-    onPrimary = Color.White,
-    primaryContainer = Color(0xFFCCFBF1),
-    onPrimaryContainer = Color(0xFF134E4A),
-    secondary = CyanAccent,
-    onSecondary = Color.White,
-    secondaryContainer = Color(0xFFE0F2FE),
-    onSecondaryContainer = Color(0xFF0369A1),
-    tertiary = RiskWarningAmber,
-    background = Slate50,
-    surface = Color.White,
-    onBackground = Slate900,
-    onSurface = Slate900,
-    surfaceVariant = Slate100,
-    onSurfaceVariant = Slate600,
-    outline = Slate300
+// High-contrast Obsidian & Greenery Dark Scheme
+private val ObsidianGreeneryDarkScheme = darkColorScheme(
+    primary = GreeneryLight,
+    onPrimary = PureBlack,
+    primaryContainer = GreeneryDark,
+    onPrimaryContainer = GreeneryContainer,
+    secondary = PureWhite,
+    onSecondary = PureBlack,
+    secondaryContainer = CharcoalDark,
+    onSecondaryContainer = PureWhite,
+    tertiary = RedAlertBright,
+    onTertiary = PureWhite,
+    tertiaryContainer = RedAlertDark,
+    onTertiaryContainer = RedAlertContainer,
+    background = ObsidianBlack,
+    onBackground = PureWhite,
+    surface = CharcoalDark,
+    onSurface = PureWhite,
+    surfaceVariant = CharcoalDark,
+    onSurfaceVariant = BorderMedium,
+    outline = CharcoalText,
+    error = RedAlertBright,
+    onError = PureBlack,
+    errorContainer = RedAlertDark,
+    onErrorContainer = PureWhite
 )
 
 @Composable
 fun SlopeWatchTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = false, // Clean, crisp white & greenery by default
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
@@ -60,8 +75,8 @@ fun SlopeWatchTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> ObsidianGreeneryDarkScheme
+        else -> CleanWhiteGreeneryScheme
     }
 
     MaterialTheme(

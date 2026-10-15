@@ -84,7 +84,8 @@ class SlopeWatchRepositoryImpl(
         val nowIso = timeFormat.format(Date())
 
         for (station in stations) {
-            val existing = SeedDataProvider.getInitialTelemetry().findLast { it.locationId == station.id }
+            val existing = telemetryDao.getLatestReadingOnce(station.id) 
+                ?: SeedDataProvider.getInitialTelemetry().findLast { it.locationId == station.id }
             if (existing != null) {
                 // Introduce slight realistic jitter simulating live sensor telemetry ping
                 val deltaRain = (Math.random() * 0.8 - 0.2).coerceAtLeast(-0.5)

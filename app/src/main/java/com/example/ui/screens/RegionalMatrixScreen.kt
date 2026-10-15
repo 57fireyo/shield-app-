@@ -1,6 +1,9 @@
 package com.example.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,13 +21,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Sort
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,15 +39,25 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.RiskLevel
 import com.example.data.model.StationWithLatestTelemetry
-import com.example.ui.theme.RiskCriticalRed
-import com.example.ui.theme.RiskLowGreen
-import com.example.ui.theme.RiskWarningAmber
+import com.example.ui.theme.AlertAmber
+import com.example.ui.theme.AlertAmberContainer
+import com.example.ui.theme.AlertAmberText
+import com.example.ui.theme.BorderSubtle
+import com.example.ui.theme.GreeneryContainer
+import com.example.ui.theme.GreeneryContainerText
+import com.example.ui.theme.GreeneryPrimary
+import com.example.ui.theme.ObsidianBlack
+import com.example.ui.theme.PureWhite
+import com.example.ui.theme.RedAlertBright
+import com.example.ui.theme.RedAlertContainer
+import com.example.ui.theme.RedAlertPrimary
+import com.example.ui.theme.SurfaceClean
+import com.example.ui.theme.SurfaceSubtle
 
 enum class MatrixSort {
     CRITICAL_FIRST,
@@ -80,7 +93,7 @@ fun RegionalMatrixScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(PureWhite)
     ) {
         // Header
         Column(
@@ -91,10 +104,10 @@ fun RegionalMatrixScreen(
             Text(
                 text = "North-East Regional Matrix",
                 fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                fontWeight = FontWeight.ExtraBold,
+                color = ObsidianBlack
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(3.dp))
             Text(
                 text = "Comparative Vulnerability & Critical Infrastructure Index",
                 fontSize = 13.sp,
@@ -112,24 +125,60 @@ fun RegionalMatrixScreen(
                 Icon(
                     imageVector = Icons.Default.Sort,
                     contentDescription = "Sort",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = ObsidianBlack,
                     modifier = Modifier.size(18.dp)
                 )
 
                 FilterChip(
                     selected = sortBy == MatrixSort.CRITICAL_FIRST,
                     onClick = { sortBy = MatrixSort.CRITICAL_FIRST },
-                    label = { Text("Risk Level", fontSize = 11.sp) }
+                    label = { Text("Risk Level", fontSize = 11.sp, fontWeight = FontWeight.SemiBold) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = ObsidianBlack,
+                        selectedLabelColor = PureWhite,
+                        containerColor = PureWhite,
+                        labelColor = ObsidianBlack
+                    ),
+                    border = FilterChipDefaults.filterChipBorder(
+                        enabled = true,
+                        selected = sortBy == MatrixSort.CRITICAL_FIRST,
+                        borderColor = BorderSubtle,
+                        selectedBorderColor = ObsidianBlack
+                    )
                 )
                 FilterChip(
                     selected = sortBy == MatrixSort.SLOPE_STEEPNESS,
                     onClick = { sortBy = MatrixSort.SLOPE_STEEPNESS },
-                    label = { Text("Steepest Slopes", fontSize = 11.sp) }
+                    label = { Text("Steepest Slopes", fontSize = 11.sp, fontWeight = FontWeight.SemiBold) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = GreeneryContainer,
+                        selectedLabelColor = GreeneryContainerText,
+                        containerColor = PureWhite,
+                        labelColor = ObsidianBlack
+                    ),
+                    border = FilterChipDefaults.filterChipBorder(
+                        enabled = true,
+                        selected = sortBy == MatrixSort.SLOPE_STEEPNESS,
+                        borderColor = BorderSubtle,
+                        selectedBorderColor = GreeneryPrimary
+                    )
                 )
                 FilterChip(
                     selected = sortBy == MatrixSort.POPULATION,
                     onClick = { sortBy = MatrixSort.POPULATION },
-                    label = { Text("Population", fontSize = 11.sp) }
+                    label = { Text("Population", fontSize = 11.sp, fontWeight = FontWeight.SemiBold) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = GreeneryContainer,
+                        selectedLabelColor = GreeneryContainerText,
+                        containerColor = PureWhite,
+                        labelColor = ObsidianBlack
+                    ),
+                    border = FilterChipDefaults.filterChipBorder(
+                        enabled = true,
+                        selected = sortBy == MatrixSort.POPULATION,
+                        borderColor = BorderSubtle,
+                        selectedBorderColor = GreeneryPrimary
+                    )
                 )
             }
         }
@@ -150,7 +199,8 @@ fun RegionalMatrixScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    colors = CardDefaults.cardColors(containerColor = PureWhite),
+                    border = BorderStroke(1.dp, if (criticals > 0) RedAlertBright.copy(alpha = 0.5f) else BorderSubtle),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -163,7 +213,7 @@ fun RegionalMatrixScreen(
                                 text = stateName,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = ObsidianBlack
                             )
 
                             Row(
@@ -174,14 +224,14 @@ fun RegionalMatrixScreen(
                                     Box(
                                         modifier = Modifier
                                             .clip(RoundedCornerShape(6.dp))
-                                            .background(RiskCriticalRed.copy(alpha = 0.15f))
-                                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                                            .background(RedAlertContainer)
+                                            .padding(horizontal = 7.dp, vertical = 3.dp)
                                     ) {
                                         Text(
                                             text = "$criticals CRITICAL",
                                             fontSize = 10.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = RiskCriticalRed
+                                            fontWeight = FontWeight.ExtraBold,
+                                            color = RedAlertPrimary
                                         )
                                     }
                                 }
@@ -189,14 +239,14 @@ fun RegionalMatrixScreen(
                                     Box(
                                         modifier = Modifier
                                             .clip(RoundedCornerShape(6.dp))
-                                            .background(RiskWarningAmber.copy(alpha = 0.15f))
-                                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                                            .background(AlertAmberContainer)
+                                            .padding(horizontal = 7.dp, vertical = 3.dp)
                                     ) {
                                         Text(
                                             text = "$highs WARNING",
                                             fontSize = 10.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = RiskWarningAmber
+                                            fontWeight = FontWeight.ExtraBold,
+                                            color = AlertAmberText
                                         )
                                     }
                                 }
@@ -205,12 +255,13 @@ fun RegionalMatrixScreen(
 
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        // State quick stats row
+                        // State quick stats row in soft greenery/subtle background
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                                .background(GreeneryContainer.copy(alpha = 0.35f))
+                                .border(BorderStroke(1.dp, GreeneryContainer), RoundedCornerShape(8.dp))
                                 .padding(8.dp),
                             horizontalArrangement = Arrangement.SpaceAround
                         ) {
@@ -229,7 +280,9 @@ fun RegionalMatrixScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clip(RoundedCornerShape(8.dp))
-                                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                                        .background(SurfaceSubtle)
+                                        .border(BorderStroke(1.dp, BorderSubtle), RoundedCornerShape(8.dp))
+                                        .clickable { onStationClick(item.station.id) }
                                         .padding(horizontal = 10.dp, vertical = 8.dp),
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
@@ -238,8 +291,8 @@ fun RegionalMatrixScreen(
                                         Text(
                                             text = "${item.station.code} • ${item.station.name}",
                                             fontSize = 13.sp,
-                                            fontWeight = FontWeight.SemiBold,
-                                            color = MaterialTheme.colorScheme.onSurface
+                                            fontWeight = FontWeight.Bold,
+                                            color = ObsidianBlack
                                         )
                                         Text(
                                             text = "Infra: ${item.station.criticalInfrastructure}",
@@ -247,17 +300,25 @@ fun RegionalMatrixScreen(
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
-                                    Box(
-                                        modifier = Modifier
-                                            .clip(RoundedCornerShape(6.dp))
-                                            .background(item.evaluatedRiskLevel.getColor().copy(alpha = 0.15f))
-                                            .padding(horizontal = 6.dp, vertical = 2.dp)
-                                    ) {
-                                        Text(
-                                            text = item.evaluatedRiskLevel.label,
-                                            fontSize = 10.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = item.evaluatedRiskLevel.getColor()
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Box(
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(6.dp))
+                                                .background(item.evaluatedRiskLevel.getContainerColor())
+                                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                                        ) {
+                                            Text(
+                                                text = item.evaluatedRiskLevel.label,
+                                                fontSize = 10.sp,
+                                                fontWeight = FontWeight.ExtraBold,
+                                                color = item.evaluatedRiskLevel.getTextColor()
+                                            )
+                                        }
+                                        Icon(
+                                            imageVector = Icons.Default.ChevronRight,
+                                            contentDescription = null,
+                                            tint = ObsidianBlack,
+                                            modifier = Modifier.size(16.dp)
                                         )
                                     }
                                 }
@@ -276,7 +337,7 @@ fun RegionalMatrixScreen(
 @Composable
 private fun StatColumn(label: String, value: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = label, fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(text = value, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+        Text(text = label, fontSize = 10.sp, color = GreeneryContainerText, fontWeight = FontWeight.Medium)
+        Text(text = value, fontSize = 13.sp, fontWeight = FontWeight.ExtraBold, color = ObsidianBlack)
     }
 }

@@ -1,5 +1,6 @@
 package com.example.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,14 +17,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Sensors
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -40,7 +35,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -50,11 +44,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.ThresholdConfig
+import com.example.ui.theme.BorderSubtle
+import com.example.ui.theme.GreeneryContainer
+import com.example.ui.theme.GreeneryPrimary
 import com.example.ui.theme.MetricPorePressure
 import com.example.ui.theme.MetricRainfall
 import com.example.ui.theme.MetricTilt
-import com.example.ui.theme.RiskCriticalRed
-import com.example.ui.theme.RiskWarningAmber
+import com.example.ui.theme.ObsidianBlack
+import com.example.ui.theme.PureWhite
+import com.example.ui.theme.RedAlertPrimary
+import com.example.ui.theme.SurfaceClean
+import com.example.ui.theme.SurfaceSubtle
 
 @Composable
 fun ThresholdSettingsScreen(
@@ -76,7 +76,7 @@ fun ThresholdSettingsScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(PureWhite)
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -86,10 +86,10 @@ fun ThresholdSettingsScreen(
             Text(
                 text = "Alert Thresholds & Diagnostics",
                 fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                fontWeight = FontWeight.ExtraBold,
+                color = ObsidianBlack
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(3.dp))
             Text(
                 text = "Calibrate Geological Early-Warning triggers and telemetry simulation",
                 fontSize = 13.sp,
@@ -100,7 +100,8 @@ fun ThresholdSettingsScreen(
         // Live Simulation Card
         Card(
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            colors = CardDefaults.cardColors(containerColor = PureWhite),
+            border = BorderStroke(1.dp, BorderSubtle),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
@@ -114,7 +115,7 @@ fun ThresholdSettingsScreen(
                             text = "Auto-Telemetry Pulse Stream",
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = ObsidianBlack
                         )
                         Text(
                             text = "Emulates field sensor updates every 4s",
@@ -127,13 +128,15 @@ fun ThresholdSettingsScreen(
                         onCheckedChange = onToggleAutoSimulation,
                         modifier = Modifier.testTag("auto_simulation_switch"),
                         colors = SwitchDefaults.colors(
-                            checkedThumbColor = MaterialTheme.colorScheme.primary,
-                            checkedTrackColor = MaterialTheme.colorScheme.primaryContainer
+                            checkedThumbColor = PureWhite,
+                            checkedTrackColor = GreeneryPrimary,
+                            uncheckedThumbColor = ObsidianBlack,
+                            uncheckedTrackColor = SurfaceSubtle
                         )
                     )
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -144,22 +147,24 @@ fun ThresholdSettingsScreen(
                         modifier = Modifier
                             .weight(1f)
                             .testTag("single_pulse_btn"),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                        colors = ButtonDefaults.buttonColors(containerColor = ObsidianBlack)
                     ) {
-                        Icon(imageVector = Icons.Default.Sensors, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Icon(imageVector = Icons.Default.Sensors, contentDescription = null, tint = PureWhite, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Send Ping", fontSize = 13.sp)
+                        Text("Send Ping", fontSize = 13.sp, color = PureWhite, fontWeight = FontWeight.Bold)
                     }
 
                     OutlinedButton(
                         onClick = onResetBaseline,
                         modifier = Modifier
                             .weight(1f)
-                            .testTag("reset_baseline_btn")
+                            .testTag("reset_baseline_btn"),
+                        border = BorderStroke(1.dp, BorderSubtle),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = ObsidianBlack)
                     ) {
                         Icon(imageVector = Icons.Default.RestartAlt, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Reset Baseline", fontSize = 13.sp)
+                        Text("Reset Baseline", fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
                     }
                 }
             }
@@ -168,7 +173,8 @@ fun ThresholdSettingsScreen(
         // Threshold Sliders Card
         Card(
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            colors = CardDefaults.cardColors(containerColor = PureWhite),
+            border = BorderStroke(1.dp, BorderSubtle),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
@@ -176,7 +182,7 @@ fun ThresholdSettingsScreen(
                     text = "Threshold Triggers Calibration",
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = ObsidianBlack
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -191,29 +197,29 @@ fun ThresholdSettingsScreen(
                     onValueChange = { poreCritical = it }
                 )
 
-                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = BorderSubtle)
 
-                // Inclinometer Tilt Critical
+                // Inclinometer Tilt Critical in Vivid Red
                 ThresholdSlider(
-                    title = "Slope Tilt Critical Threshold",
+                    title = "Slope Tilt Critical Threshold (RED ALERT)",
                     currentValue = tiltCritical,
                     unit = "°",
                     min = 2.0,
                     max = 8.0,
-                    color = MetricTilt,
+                    color = RedAlertPrimary,
                     onValueChange = { tiltCritical = it }
                 )
 
-                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = BorderSubtle)
 
-                // 24h Precipitation Trigger
+                // 24h Precipitation Trigger in Greenery
                 ThresholdSlider(
                     title = "24-Hour Rainfall Warning Limit",
                     currentValue = rainWarning,
                     unit = "mm",
                     min = 40.0,
                     max = 200.0,
-                    color = MetricRainfall,
+                    color = GreeneryPrimary,
                     onValueChange = { rainWarning = it }
                 )
 
@@ -232,11 +238,11 @@ fun ThresholdSettingsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("save_thresholds_btn"),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    colors = ButtonDefaults.buttonColors(containerColor = GreeneryPrimary)
                 ) {
-                    Icon(imageVector = Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = PureWhite, modifier = Modifier.size(18.dp))
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text("Apply & Persist Thresholds", fontWeight = FontWeight.Bold)
+                    Text("Apply & Persist Thresholds", fontWeight = FontWeight.Bold, color = PureWhite)
                 }
             }
         }
@@ -244,19 +250,21 @@ fun ThresholdSettingsScreen(
         // Architecture & Stack Diagnostic Card
         Card(
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))
+            colors = CardDefaults.cardColors(containerColor = PureWhite),
+            border = BorderStroke(1.dp, BorderSubtle),
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = "System Diagnostics & Architecture",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = ObsidianBlack
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 DiagnosticRow("DI Engine", "Koin 3.5.6 (Singleton scope)")
                 DiagnosticRow("Local Storage", "Room 2.7.0 (SQLite with indices)")
-                DiagnosticRow("UI Framework", "Jetpack Compose M3 (Declarative)")
+                DiagnosticRow("UI Framework", "Jetpack Compose M3 (Clean White & Greenery)")
                 DiagnosticRow("State Lifecycle", "StateFlow (WhileSubscribed 5s)")
                 DiagnosticRow("Frame Rate Target", "60 / 120 FPS Native")
             }
@@ -281,7 +289,7 @@ private fun ThresholdSlider(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = title, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = title, fontSize = 13.sp, color = ObsidianBlack, fontWeight = FontWeight.Medium)
             Text(
                 text = "${String.format("%.1f", currentValue)} $unit",
                 fontSize = 13.sp,
@@ -295,7 +303,8 @@ private fun ThresholdSlider(
             valueRange = min.toFloat()..max.toFloat(),
             colors = SliderDefaults.colors(
                 thumbColor = color,
-                activeTrackColor = color
+                activeTrackColor = color,
+                inactiveTrackColor = BorderSubtle
             )
         )
     }
@@ -310,6 +319,6 @@ private fun DiagnosticRow(label: String, value: String) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(text = label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(text = value, fontSize = 12.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface)
+        Text(text = value, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = ObsidianBlack)
     }
 }

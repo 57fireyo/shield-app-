@@ -1,7 +1,9 @@
 package com.example.ui.screens
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,15 +24,9 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.BatteryFull
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
-import androidx.compose.material.icons.filled.ElectricBolt
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Sensors
-import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material.icons.filled.Terrain
-import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,7 +47,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -62,14 +57,24 @@ import com.example.data.model.TelemetryReadingEntity
 import com.example.ui.components.RiskBadge
 import com.example.ui.components.SparklineChart
 import com.example.ui.components.TelemetryMetricChip
+import com.example.ui.theme.AlertAmber
+import com.example.ui.theme.AlertAmberContainer
+import com.example.ui.theme.AlertAmberText
+import com.example.ui.theme.BorderSubtle
+import com.example.ui.theme.GreeneryContainer
+import com.example.ui.theme.GreeneryContainerText
+import com.example.ui.theme.GreeneryPrimary
 import com.example.ui.theme.MetricPorePressure
 import com.example.ui.theme.MetricRainfall
 import com.example.ui.theme.MetricSeismic
-import com.example.ui.theme.MetricSoilMoisture
 import com.example.ui.theme.MetricTilt
-import com.example.ui.theme.RiskCriticalRed
-import com.example.ui.theme.RiskLowGreen
-import com.example.ui.theme.RiskWarningAmber
+import com.example.ui.theme.ObsidianBlack
+import com.example.ui.theme.PureWhite
+import com.example.ui.theme.RedAlertBright
+import com.example.ui.theme.RedAlertContainer
+import com.example.ui.theme.RedAlertDark
+import com.example.ui.theme.RedAlertPrimary
+import com.example.ui.theme.SurfaceClean
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,7 +85,6 @@ fun StationDetailScreen(
     onBookmarkToggle: (String, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // BackHandler ensures physical/system back button safely returns to Dashboard
     BackHandler {
         onBackClick()
     }
@@ -90,7 +94,7 @@ fun StationDetailScreen(
             modifier = modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Text("Station not found")
+            Text("Station not found", color = ObsidianBlack)
         }
         return
     }
@@ -108,63 +112,67 @@ fun StationDetailScreen(
         (baseFos - delta).coerceIn(0.35, 2.80)
     }
 
-    val fosColor = when {
-        simulatedFos < 1.0 -> RiskCriticalRed
-        simulatedFos <= 1.3 -> RiskWarningAmber
-        else -> RiskLowGreen
+    val (fosBg, fosText) = when {
+        simulatedFos < 1.0 -> Pair(RedAlertContainer, RedAlertPrimary)
+        simulatedFos <= 1.3 -> Pair(AlertAmberContainer, AlertAmberText)
+        else -> Pair(GreeneryContainer, GreeneryContainerText)
     }
 
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(PureWhite)
     ) {
         // Top App Bar
-        TopAppBar(
-            title = {
-                Column {
-                    Text(
-                        text = station.code,
-                        fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Text(
-                        text = station.name,
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1
-                    )
-                }
-            },
-            navigationIcon = {
-                IconButton(
-                    onClick = onBackClick,
-                    modifier = Modifier.testTag("detail_back_button")
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back to list"
-                    )
-                }
-            },
-            actions = {
-                IconButton(
-                    onClick = { onBookmarkToggle(station.id, station.isBookmarked) },
-                    modifier = Modifier.testTag("detail_bookmark_btn")
-                ) {
-                    Icon(
-                        imageVector = if (station.isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
-                        contentDescription = "Bookmark",
-                        tint = if (station.isBookmarked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.surface
+        Column {
+            TopAppBar(
+                title = {
+                    Column {
+                        Text(
+                            text = station.code,
+                            fontSize = 12.sp,
+                            color = GreeneryPrimary,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = station.name,
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = ObsidianBlack,
+                            maxLines = 1
+                        )
+                    }
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = onBackClick,
+                        modifier = Modifier.testTag("detail_back_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back to list",
+                            tint = ObsidianBlack
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = { onBookmarkToggle(station.id, station.isBookmarked) },
+                        modifier = Modifier.testTag("detail_bookmark_btn")
+                    ) {
+                        Icon(
+                            imageVector = if (station.isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
+                            contentDescription = "Bookmark",
+                            tint = if (station.isBookmarked) GreeneryPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = PureWhite
+                )
             )
-        )
+            HorizontalDivider(color = BorderSubtle, thickness = 1.dp)
+        }
 
         // Scrollable content
         Column(
@@ -177,7 +185,8 @@ fun StationDetailScreen(
             // Hero Status Banner
             Card(
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                colors = CardDefaults.cardColors(containerColor = PureWhite),
+                border = BorderStroke(1.dp, if (risk == RiskLevel.CRITICAL) RedAlertBright.copy(alpha = 0.5f) else BorderSubtle),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -191,13 +200,13 @@ fun StationDetailScreen(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(fosColor.copy(alpha = 0.15f))
+                                .background(fosBg)
                                 .padding(horizontal = 10.dp, vertical = 5.dp)
                         ) {
                             Text(
                                 text = "Factor of Safety: ${String.format("%.2f", simulatedFos)}",
-                                color = fosColor,
-                                fontWeight = FontWeight.Bold,
+                                color = fosText,
+                                fontWeight = FontWeight.ExtraBold,
                                 fontSize = 13.sp
                             )
                         }
@@ -209,10 +218,10 @@ fun StationDetailScreen(
                         text = station.description,
                         fontSize = 14.sp,
                         lineHeight = 20.sp,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = ObsidianBlack
                     )
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -221,12 +230,13 @@ fun StationDetailScreen(
                         Icon(
                             imageVector = Icons.Default.LocationOn,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = GreeneryPrimary,
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
                             text = "${station.district}, ${station.state} (${station.latitude}°, ${station.longitude}°)",
                             fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -236,7 +246,8 @@ fun StationDetailScreen(
             // Geological Profile Specs Card
             Card(
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                colors = CardDefaults.cardColors(containerColor = PureWhite),
+                border = BorderStroke(1.dp, BorderSubtle),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -244,7 +255,7 @@ fun StationDetailScreen(
                         text = "Geotechnical Terrain Profile",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = ObsidianBlack
                     )
                     Spacer(modifier = Modifier.height(12.dp))
 
@@ -261,7 +272,8 @@ fun StationDetailScreen(
             // Real-time Sparkline Charts Section
             Card(
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                colors = CardDefaults.cardColors(containerColor = PureWhite),
+                border = BorderStroke(1.dp, BorderSubtle),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -274,22 +286,23 @@ fun StationDetailScreen(
                             text = "12-Hour Telemetry History",
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = ObsidianBlack
                         )
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(modifier = Modifier.size(7.dp).background(RiskLowGreen, CircleShape))
+                            Box(modifier = Modifier.size(7.dp).background(GreeneryPrimary, CircleShape))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
                                 text = "13 Pings Synced",
                                 fontSize = 11.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                fontWeight = FontWeight.SemiBold,
+                                color = GreeneryPrimary
                             )
                         }
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // 1. Tilt Inclinometer
+                    // 1. Tilt Inclinometer in Red Alert
                     val tiltHistory = telemetryHistory.map { it.inclinometerTiltDeg }
                     SparklineChart(
                         title = "Inclinometer Slope Tilt",
@@ -299,7 +312,7 @@ fun StationDetailScreen(
                         lineColor = MetricTilt
                     )
 
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = BorderSubtle)
 
                     // 2. Pore Water Pressure
                     val poreHistory = telemetryHistory.map { it.porePressureKpa }
@@ -311,9 +324,9 @@ fun StationDetailScreen(
                         lineColor = MetricPorePressure
                     )
 
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = BorderSubtle)
 
-                    // 3. Accumulated Rainfall
+                    // 3. Accumulated Rainfall in Greenery
                     val rainHistory = telemetryHistory.map { it.rainfallAcc24hMm }
                     SparklineChart(
                         title = "24h Cumulative Precipitation",
@@ -323,7 +336,7 @@ fun StationDetailScreen(
                         lineColor = MetricRainfall
                     )
 
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = BorderSubtle)
 
                     // 4. Seismic Acceleration PGA
                     val pgaHistory = telemetryHistory.map { it.seismicPgaGal }
@@ -340,15 +353,16 @@ fun StationDetailScreen(
             // Geotechnical Stability Simulator Card
             Card(
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
-                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                colors = CardDefaults.cardColors(containerColor = PureWhite),
+                border = BorderStroke(1.dp, BorderSubtle),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         text = "Interactive Slope Failure Simulator",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = ObsidianBlack
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
@@ -357,7 +371,7 @@ fun StationDetailScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -366,13 +380,14 @@ fun StationDetailScreen(
                         Text(
                             text = "Additional Surge: +${simulatedAdditionalPorePressure.toInt()} kPa",
                             fontSize = 13.sp,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.Bold,
+                            color = ObsidianBlack
                         )
                         Text(
                             text = "Projected FoS: ${String.format("%.2f", simulatedFos)}",
                             fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = fosColor
+                            fontWeight = FontWeight.ExtraBold,
+                            color = fosText
                         )
                     }
 
@@ -382,8 +397,9 @@ fun StationDetailScreen(
                         valueRange = 0f..60f,
                         steps = 5,
                         colors = SliderDefaults.colors(
-                            thumbColor = MaterialTheme.colorScheme.primary,
-                            activeTrackColor = MaterialTheme.colorScheme.primary
+                            thumbColor = GreeneryPrimary,
+                            activeTrackColor = GreeneryPrimary,
+                            inactiveTrackColor = BorderSubtle
                         )
                     )
 
@@ -397,21 +413,22 @@ fun StationDetailScreen(
                     }
 
                     if (simulatedFos < 1.0) {
-                        Spacer(modifier = Modifier.height(10.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(RiskCriticalRed.copy(alpha = 0.15f))
-                                .padding(10.dp),
+                                .background(RedAlertContainer)
+                                .border(BorderStroke(1.dp, RedAlertBright.copy(alpha = 0.5f)), RoundedCornerShape(8.dp))
+                                .padding(12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(imageVector = Icons.Default.Warning, contentDescription = null, tint = RiskCriticalRed)
+                            Icon(imageVector = Icons.Default.Warning, contentDescription = null, tint = RedAlertPrimary)
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = "CRITICAL: Slope failure threshold exceeded! Immediate evacuation alert protocol triggered.",
                                 fontSize = 12.sp,
-                                color = RiskCriticalRed,
+                                color = RedAlertDark,
                                 fontWeight = FontWeight.Bold
                             )
                         }
@@ -422,14 +439,16 @@ fun StationDetailScreen(
             // Hardware & Telemetry Diagnostic Card
             Card(
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                colors = CardDefaults.cardColors(containerColor = PureWhite),
+                border = BorderStroke(1.dp, BorderSubtle),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         text = "Field Sensor Station Health",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = ObsidianBlack
                     )
                     Spacer(modifier = Modifier.height(10.dp))
 
@@ -442,7 +461,7 @@ fun StationDetailScreen(
                             value = "${latest?.batteryPct?.toInt() ?: 98}",
                             unit = "%",
                             icon = Icons.Default.BatteryFull,
-                            accentColor = MaterialTheme.colorScheme.primary,
+                            accentColor = GreeneryPrimary,
                             modifier = Modifier.weight(1f)
                         )
                         TelemetryMetricChip(
@@ -450,7 +469,7 @@ fun StationDetailScreen(
                             value = "${latest?.signalStrengthDbm ?: -65}",
                             unit = "dBm",
                             icon = Icons.Default.Sensors,
-                            accentColor = MaterialTheme.colorScheme.secondary,
+                            accentColor = ObsidianBlack,
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -479,7 +498,7 @@ private fun ProfileRow(label: String, value: String) {
             text = value,
             fontSize = 13.sp,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface
+            color = ObsidianBlack
         )
     }
 }

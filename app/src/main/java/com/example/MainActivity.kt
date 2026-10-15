@@ -19,7 +19,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             SlopeWatchTheme {
                 val viewModel: SlopeWatchViewModel = koinViewModel()
-                Surface(modifier = Modifier.fillMaxSize()) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = com.example.ui.theme.PureWhite
+                ) {
                     MainNavigationScreen(viewModel = viewModel)
                 }
             }

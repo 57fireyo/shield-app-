@@ -72,12 +72,13 @@ class SlopeWatchViewModel(
 
         val states = stations.map { it.station.state }.distinct().sorted()
 
+        val q = query.trim()
         val filtered = stations.filter { item ->
-            val matchesQuery = query.isBlank() ||
-                item.station.name.contains(query, ignoreCase = true) ||
-                item.station.code.contains(query, ignoreCase = true) ||
-                item.station.district.contains(query, ignoreCase = true) ||
-                item.station.state.contains(query, ignoreCase = true)
+            val matchesQuery = q.isBlank() ||
+                item.station.name.contains(q, ignoreCase = true) ||
+                item.station.code.contains(q, ignoreCase = true) ||
+                item.station.district.contains(q, ignoreCase = true) ||
+                item.station.state.contains(q, ignoreCase = true)
 
             val matchesState = stateFilter == null || item.station.state.equals(stateFilter, ignoreCase = true)
             val matchesRisk = riskFilter == null || item.evaluatedRiskLevel == riskFilter

@@ -15,14 +15,16 @@ interface TelemetryDao {
     @Query("SELECT * FROM telemetry_readings WHERE location_id = :locationId ORDER BY timestamp DESC LIMIT 1")
     fun getLatestReadingForStation(locationId: String): Flow<TelemetryReadingEntity?>
 
+    @Query("SELECT * FROM telemetry_readings WHERE location_id = :locationId ORDER BY timestamp DESC LIMIT 1")
+    suspend fun getLatestReadingOnce(locationId: String): TelemetryReadingEntity?
+
     @Query("""
-        SELECT * FROM telemetry_readings
-        WHERE id IN (
-            SELECT id FROM telemetry_readings t1
-            WHERE timestamp = (
-                SELECT MAX(timestamp) FROM telemetry_readings t2 WHERE t2.location_id = t1.location_id
-            )
-        )
+        SELECT t1.* FROM telemetry_readings t1
+        INNER JOIN (
+            SELECT location_id, MAX(timestamp) AS max_timestamp
+            FROM telemetry_readings
+            GROUP BY location_id
+        ) t2 ON t1.location_id = t2.location_id AND t1.timestamp = t2.max_timestamp
     """)
     fun getLatestReadingPerStation(): Flow<List<TelemetryReadingEntity>>
 

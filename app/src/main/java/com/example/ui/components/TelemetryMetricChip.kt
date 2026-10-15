@@ -1,6 +1,8 @@
 package com.example.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +24,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.ui.theme.BorderSubtle
+import com.example.ui.theme.ObsidianBlack
+import com.example.ui.theme.RedAlertBright
+import com.example.ui.theme.RedAlertContainer
+import com.example.ui.theme.RedAlertPrimary
+import com.example.ui.theme.SurfaceSubtle
 
 @Composable
 fun TelemetryMetricChip(
@@ -33,20 +41,24 @@ fun TelemetryMetricChip(
     modifier: Modifier = Modifier,
     isWarning: Boolean = false
 ) {
-    val bgColor = if (isWarning) accentColor.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant
+    val bgColor = if (isWarning) RedAlertContainer else SurfaceSubtle
+    val iconColor = if (isWarning) RedAlertPrimary else accentColor
+    val valueColor = if (isWarning) RedAlertPrimary else ObsidianBlack
+    val borderColor = if (isWarning) RedAlertBright.copy(alpha = 0.5f) else BorderSubtle
 
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(10.dp))
             .background(bgColor)
+            .border(BorderStroke(1.dp, borderColor), RoundedCornerShape(10.dp))
             .padding(horizontal = 10.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = icon,
             contentDescription = label,
-            tint = accentColor,
-            modifier = Modifier.size(18.dp)
+            tint = iconColor,
+            modifier = Modifier.size(17.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column {
@@ -65,7 +77,7 @@ fun TelemetryMetricChip(
                     text = value,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (isWarning) accentColor else MaterialTheme.colorScheme.onSurface
+                    color = valueColor
                 )
                 Text(
                     text = unit,

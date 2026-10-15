@@ -1,6 +1,8 @@
 package com.example.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,8 +28,6 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Sensors
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -42,16 +42,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.RiskLevel
 import com.example.ui.components.StationCard
-import com.example.ui.theme.RiskCriticalRed
-import com.example.ui.theme.RiskLowGreen
-import com.example.ui.theme.RiskWarningAmber
+import com.example.ui.theme.AlertAmber
+import com.example.ui.theme.AlertAmberContainer
+import com.example.ui.theme.AlertAmberText
+import com.example.ui.theme.BorderSubtle
+import com.example.ui.theme.GreeneryContainer
+import com.example.ui.theme.GreeneryContainerText
+import com.example.ui.theme.GreeneryPrimary
+import com.example.ui.theme.ObsidianBlack
+import com.example.ui.theme.PureWhite
+import com.example.ui.theme.RedAlertBright
+import com.example.ui.theme.RedAlertContainer
+import com.example.ui.theme.RedAlertPrimary
+import com.example.ui.theme.SurfaceClean
 import com.example.ui.viewmodel.SlopeWatchUiState
 
 @Composable
@@ -71,7 +80,7 @@ fun DashboardScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(PureWhite)
     ) {
         // Quick Telemetry Summary Bar
         RegionalSummaryRibbon(
@@ -96,7 +105,7 @@ fun DashboardScreen(
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Search",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = ObsidianBlack
                 )
             },
             trailingIcon = {
@@ -113,10 +122,12 @@ fun DashboardScreen(
             singleLine = true,
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                focusedContainerColor = PureWhite,
+                unfocusedContainerColor = PureWhite,
+                focusedBorderColor = GreeneryPrimary,
+                unfocusedBorderColor = BorderSubtle,
+                focusedTextColor = ObsidianBlack,
+                unfocusedTextColor = ObsidianBlack
             )
         )
 
@@ -135,10 +146,18 @@ fun DashboardScreen(
                     onSelectRiskFilter(null)
                     if (uiState.onlyBookmarked) onToggleBookmarkFilter()
                 },
-                label = { Text("All (${uiState.allStations.size})", fontSize = 12.sp) },
+                label = { Text("All (${uiState.allStations.size})", fontSize = 12.sp, fontWeight = FontWeight.SemiBold) },
                 colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                    selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    selectedContainerColor = ObsidianBlack,
+                    selectedLabelColor = PureWhite,
+                    containerColor = PureWhite,
+                    labelColor = ObsidianBlack
+                ),
+                border = FilterChipDefaults.filterChipBorder(
+                    enabled = true,
+                    selected = uiState.selectedRiskFilter == null && !uiState.onlyBookmarked,
+                    borderColor = BorderSubtle,
+                    selectedBorderColor = ObsidianBlack
                 )
             )
 
@@ -149,8 +168,16 @@ fun DashboardScreen(
                 },
                 label = { Text("Critical (${uiState.criticalCount})", fontSize = 12.sp, fontWeight = FontWeight.Bold) },
                 colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = RiskCriticalRed.copy(alpha = 0.2f),
-                    selectedLabelColor = RiskCriticalRed
+                    selectedContainerColor = RedAlertContainer,
+                    selectedLabelColor = RedAlertPrimary,
+                    containerColor = PureWhite,
+                    labelColor = RedAlertPrimary
+                ),
+                border = FilterChipDefaults.filterChipBorder(
+                    enabled = true,
+                    selected = uiState.selectedRiskFilter == RiskLevel.CRITICAL,
+                    borderColor = RedAlertBright.copy(alpha = 0.4f),
+                    selectedBorderColor = RedAlertPrimary
                 )
             )
 
@@ -159,20 +186,36 @@ fun DashboardScreen(
                 onClick = {
                     onSelectRiskFilter(if (uiState.selectedRiskFilter == RiskLevel.HIGH) null else RiskLevel.HIGH)
                 },
-                label = { Text("High (${uiState.highCount})", fontSize = 12.sp) },
+                label = { Text("Warning (${uiState.highCount})", fontSize = 12.sp, fontWeight = FontWeight.SemiBold) },
                 colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = RiskWarningAmber.copy(alpha = 0.2f),
-                    selectedLabelColor = RiskWarningAmber
+                    selectedContainerColor = AlertAmberContainer,
+                    selectedLabelColor = AlertAmberText,
+                    containerColor = PureWhite,
+                    labelColor = AlertAmberText
+                ),
+                border = FilterChipDefaults.filterChipBorder(
+                    enabled = true,
+                    selected = uiState.selectedRiskFilter == RiskLevel.HIGH,
+                    borderColor = BorderSubtle,
+                    selectedBorderColor = AlertAmber
                 )
             )
 
             FilterChip(
                 selected = uiState.onlyBookmarked,
                 onClick = onToggleBookmarkFilter,
-                label = { Text("Saved Points", fontSize = 12.sp) },
+                label = { Text("Saved Points", fontSize = 12.sp, fontWeight = FontWeight.SemiBold) },
                 colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer
+                    selectedContainerColor = GreeneryContainer,
+                    selectedLabelColor = GreeneryContainerText,
+                    containerColor = PureWhite,
+                    labelColor = GreeneryPrimary
+                ),
+                border = FilterChipDefaults.filterChipBorder(
+                    enabled = true,
+                    selected = uiState.onlyBookmarked,
+                    borderColor = BorderSubtle,
+                    selectedBorderColor = GreeneryPrimary
                 )
             )
         }
@@ -186,8 +229,20 @@ fun DashboardScreen(
                 FilterChip(
                     selected = uiState.selectedStateFilter == null,
                     onClick = { onSelectStateFilter(null) },
-                    label = { Text("All States", fontSize = 11.sp) },
-                    shape = RoundedCornerShape(8.dp)
+                    label = { Text("All States", fontSize = 11.sp, fontWeight = FontWeight.Medium) },
+                    shape = RoundedCornerShape(8.dp),
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = GreeneryContainer,
+                        selectedLabelColor = GreeneryContainerText,
+                        containerColor = PureWhite,
+                        labelColor = ObsidianBlack
+                    ),
+                    border = FilterChipDefaults.filterChipBorder(
+                        enabled = true,
+                        selected = uiState.selectedStateFilter == null,
+                        borderColor = BorderSubtle,
+                        selectedBorderColor = GreeneryPrimary
+                    )
                 )
             }
             items(uiState.availableStates) { stateName ->
@@ -196,8 +251,20 @@ fun DashboardScreen(
                     onClick = {
                         onSelectStateFilter(if (uiState.selectedStateFilter == stateName) null else stateName)
                     },
-                    label = { Text(stateName, fontSize = 11.sp) },
-                    shape = RoundedCornerShape(8.dp)
+                    label = { Text(stateName, fontSize = 11.sp, fontWeight = FontWeight.Medium) },
+                    shape = RoundedCornerShape(8.dp),
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = GreeneryContainer,
+                        selectedLabelColor = GreeneryContainerText,
+                        containerColor = PureWhite,
+                        labelColor = ObsidianBlack
+                    ),
+                    border = FilterChipDefaults.filterChipBorder(
+                        enabled = true,
+                        selected = uiState.selectedStateFilter == stateName,
+                        borderColor = BorderSubtle,
+                        selectedBorderColor = GreeneryPrimary
+                    )
                 )
             }
         }
@@ -213,16 +280,16 @@ fun DashboardScreen(
             Text(
                 text = "Active Telemetry Feeds (${uiState.filteredStations.size})",
                 fontSize = 13.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                fontWeight = FontWeight.Bold,
+                color = ObsidianBlack
             )
 
             if (uiState.statusMessage != null) {
                 Text(
                     text = uiState.statusMessage,
                     fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Medium
+                    color = GreeneryPrimary,
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
@@ -230,7 +297,7 @@ fun DashboardScreen(
         // LazyColumn with optimized stable keys
         if (uiState.isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                CircularProgressIndicator(color = GreeneryPrimary)
             }
         } else if (uiState.filteredStations.isEmpty()) {
             Box(
@@ -250,14 +317,14 @@ fun DashboardScreen(
                     Text(
                         text = "No monitoring stations match this criteria",
                         fontSize = 15.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = ObsidianBlack,
                         fontWeight = FontWeight.Medium
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "Try clearing search keywords or state filters",
                         fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -302,7 +369,9 @@ private fun RegionalSummaryRibbon(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(14.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+        color = PureWhite,
+        border = BorderStroke(1.dp, BorderSubtle),
+        shadowElevation = 1.dp
     ) {
         Row(
             modifier = Modifier
@@ -315,40 +384,62 @@ private fun RegionalSummaryRibbon(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Live Indicator Pill
+                // Live Indicator Pill in Greenery
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .clip(RoundedCornerShape(6.dp))
-                        .background(if (isSimulating) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface)
-                        .padding(horizontal = 6.dp, vertical = 3.dp)
+                        .background(if (isSimulating) RedAlertContainer else GreeneryContainer)
+                        .padding(horizontal = 7.dp, vertical = 4.dp)
                 ) {
                     Box(
                         modifier = Modifier
                             .size(7.dp)
-                            .background(if (isSimulating) MaterialTheme.colorScheme.primary else RiskLowGreen, CircleShape)
+                            .background(if (isSimulating) RedAlertPrimary else GreeneryPrimary, CircleShape)
                     )
                     Spacer(modifier = Modifier.width(5.dp))
                     Text(
                         text = if (isSimulating) "LIVE PING" else "ONLINE",
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = if (isSimulating) RedAlertPrimary else GreeneryContainerText
                     )
                 }
 
-                // Critical summary
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(modifier = Modifier.size(8.dp).background(RiskCriticalRed, CircleShape))
+                // Critical summary in Red
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(RedAlertContainer)
+                        .padding(horizontal = 7.dp, vertical = 3.dp)
+                ) {
+                    Box(modifier = Modifier.size(6.dp).background(RedAlertPrimary, CircleShape))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = "$criticalCount Critical", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = RiskCriticalRed)
+                    Text(
+                        text = "$criticalCount Critical",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = RedAlertPrimary
+                    )
                 }
 
                 // High summary
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(modifier = Modifier.size(8.dp).background(RiskWarningAmber, CircleShape))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(AlertAmberContainer)
+                        .padding(horizontal = 7.dp, vertical = 3.dp)
+                ) {
+                    Box(modifier = Modifier.size(6.dp).background(AlertAmber, CircleShape))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = "$highCount Warning", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = RiskWarningAmber)
+                    Text(
+                        text = "$highCount Warning",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = AlertAmberText
+                    )
                 }
             }
 
@@ -361,7 +452,7 @@ private fun RegionalSummaryRibbon(
                 Icon(
                     imageVector = Icons.Default.Refresh,
                     contentDescription = "Simulate Telemetry Ping",
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = ObsidianBlack,
                     modifier = Modifier.size(20.dp)
                 )
             }
